@@ -1,39 +1,57 @@
 import express from "express";
-
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 app.use(express.json());
 
+import {getHealth} from "./controllers/health.js";
+
 const plants = [
   {
-    id: 1,
-    name: "Bamboo",
-    category: "indoor",
-    image:
+    "id": 1,
+    "name": "Bamboo",
+    "category": "indoor",
+    "image":
       "https://www.ugaoo.com/cdn/shop/files/Aimage_3.jpg?v=1682523121&width=750",
-    price: "1500",
-    description: "Lucky Bamboo Plant - 3 Layer",
+    "price": "1500",
+    "description": "Lucky Bamboo Plant - 3 Layer",
   },
 
   {
-    id: 2,
-    name: "Hibiscus",
-    category: "indoor",
-    image:
+    "id": 2,
+    "name": "Hibiscus",
+    "category": "indoor",
+    "image":
       "https://upload.wikimedia.org/wikipedia/commons/c/cb/Hibiscus_flower_TZ.jpg",
-    price: "250",
-    description: "The Hibiscus plant",
+    "price": "250",
+    "description": "The Hibiscus plant",
   },
 
   {
-    id: 3,
-    name: "Rose",
-    category: "outdoor",
-    image:
+    "id": 3,
+    "name": "Rose",
+    "category": "outdoor",
+    "image":
       "https://media.istockphoto.com/id/1256125259/photo/pink-roses-in-garden.jpg?s=1024x1024&w=is&k=20&c=kkc2SYt14-gmJ5Lb068DlnKS5q5A7H-SYmM9OeSV26o=",
-    price: "2000",
-    description: "Lucky Rose Plant - 6 Layer",
+    "price": "2000",
+    "description": "Lucky Rose Plant - 6 Layer",
   },
+
+  {
+    "id": 3,
+    "name" :"flower",
+    "category":"outdoor",
+    "image": "https://www.ugaoo.com/cdn/shop/files/Aimage_3.jpg?v=1682523121&width=750",
+    "price": "1000",
+    "description":"Lucky Sunflower Plant"
+
+}
+
+
 ];
+
+   
+app.get("/health",getHealth)
 
 app.post("/plant", (req, res) => {
   const { name, category, image, price, description } = req.body;
@@ -106,6 +124,20 @@ app.get("/plants", (req, res) => {
   });
 });
 
+app.get("/plant/:id",(req,res)=>{
+  const {id}=req.params
+ 
+  const plant= plants.find((p)=>p.id==id)
+
+  res.json({
+    success: plant ? true: false,
+    data:plant || null,
+    message:plant ? "plant fetched successfully": "plant not found",
+    
+  })
+
+})
+
 app.put("/plant/:id", (req, res) => {
   const { name, category, image, price, description } = req.body;
   const { id } = req.params;
@@ -172,7 +204,13 @@ plants.splice(index,1)
   })
 })
 
-const PORT = 5000;
+app.use("*",(req,res)=>{
+  res.send(`<div>
+    <h1 style="text-align:center,">404 not found</h1>
+  </div>`)
+})
+
+ const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`server is running on PORT ${PORT}`);
 });
