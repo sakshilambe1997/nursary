@@ -5,6 +5,8 @@ const app = express();
 app.use(express.json());
 
 import {getHealth} from "./controllers/health.js";
+import {postPlant,getPlants,getPlantId,putPlantId,deletePlantId} from "./controllers/plant.js"
+import {handlePageNotFound404} from "./controllers/errors.js"
 
 const plants = [
   {
@@ -53,162 +55,17 @@ const plants = [
    
 app.get("/health",getHealth)
 
-app.post("/plant", (req, res) => {
-  const { name, category, image, price, description } = req.body;
+app.post("/plant",postPlant )
 
-  if (!name) {
-    return res.json({
-      sucess: false,
-      data: null,
-      message: "name cannot be empty",
-    });
-  }
+app.get("/plants", getPlants);
 
-  if (!category) {
-    res.json({
-      sucess: false,
-      data: null,
-      message: "category cannot be empty",
-    });
-  }
+app.get("/plant/:id",getPlantId);
 
-  if (!image) {
-    res.json({
-      sucess: false,
-      data: null,
-      message: "image cannot be empty",
-    });
-  }
+app.put("/plant/:id", putPlantId);
 
-  if (!price) {
-    res.json({
-      sucess: false,
-      data: null,
-      message: "price cannot be empty",
-    });
-  }
+app.delete("/plant/:id",deletePlantId)
 
-  if (!description) {
-    res.json({
-      sucess: false,
-      data: null,
-      message: "description cannot be empty",
-    });
-  }
-
-  const randomId = Math.round(Math.random() * 1000);
-
-  const newPlant = {
-    id: randomId,
-    name: name,
-    category: category,
-    image: image,
-    price: price,
-    description: description,
-  };
-
-  plants.push(newPlant);
-
-  res.json({
-    success: true,
-    data: newPlant,
-    message: "new plant added successfully.",
-  });
-});
-
-app.get("/plants", (req, res) => {
-  res.json({
-    sucess: true,
-    data: plants,
-    message: "All plnts fetched sucessfully",
-  });
-});
-
-app.get("/plant/:id",(req,res)=>{
-  const {id}=req.params
- 
-  const plant= plants.find((p)=>p.id==id)
-
-  res.json({
-    success: plant ? true: false,
-    data:plant || null,
-    message:plant ? "plant fetched successfully": "plant not found",
-    
-  })
-
-})
-
-app.put("/plant/:id", (req, res) => {
-  const { name, category, image, price, description } = req.body;
-  const { id } = req.params;
-
-  let index = -1;
-
-  plants.forEach((plant, i) => {
-    if (plant.id == id) {
-      index = i;
-    }
-  });
-
-  const newObj = {
-    id,
-    name,
-    category,
-    image,
-    price,
-    description,
-  };
-
-  if (index == -1) {
-    res.json({
-      sucess: false,
-      data: null,
-      message: `plant not found for id ${id}`,
-    });
-  } else {
-    plants[index] = newObj;
-
-    res.json({
-      sucess: true,
-      data: newObj,
-      message: `plant updated successfully`,
-    });
-  }
-});
-
-app.delete("/plant/:id",(req,res)=>{
-  const {id}= req.params
-
-  let index=-1
-
-  plants.forEach((plant,i)=>{
-  if(plant.id==id){
-    index= i
-  }
-  })
-
-  if(index==-1){
-  res.json({
-    success:false,
-    messsage:`Plant not found id ${id}`,
-    data:null
-  })
-}
-
-plants.splice(index,1)
-
-  res.json({
-    success:true,
-    messsage:`Plant deleted successfully`,
-    data:null
-  })
-})
-
-app.use("*",(req,res)=>{
-  res.send(`<div>
-    <h1 style="text-align:center,">404 not found</h1>
-  </div>`)
-})
+app.use("*",handlePageNotFound404)
 
  const PORT = process.env.PORT
 app.listen(PORT, () => {
