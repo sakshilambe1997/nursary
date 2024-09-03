@@ -22,15 +22,15 @@ const DbConnection = async (req, res) => {
 DbConnection();
 
 
-import { getHealth } from "./controllers/health.js";
+import { getHealth } from "./src/controllers/health.js";
 import {
   postPlant,
   getPlants,
   getPlantId,
   putPlantId,
   deletePlantId,
-} from "./controllers/plant.js";
-import { handlePageNotFound404 } from "./controllers/errors.js";
+} from "./src/controllers/plant.js";
+import { handlePageNotFound404 } from "./src/controllers/errors.js";
 
 const plants = [
   {
